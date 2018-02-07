@@ -49,15 +49,20 @@ public class MainActivity extends AppCompatActivity {
         log.info("Connecting smart contract at address " + contractAddress);
         web3j = Web3jFactory.build(new HttpService(
                 "https://ropsten.infura.io/ku5IkS4NTM4PDhwmc5iI"));
-        log.info("Fetching wallet...");
-        String path_to_wallet = getPathToWallet();
-        if (path_to_wallet == null || path_to_wallet.isEmpty()) {
-            log.error("Got empty path to the wallet, can't construct activity...");
-            return;
-        }
-        log.info("Got path to wallet: " + path_to_wallet + "\nLoading credentials...");
         try {
-            credentials = WalletUtils.loadCredentials("Xgnebvkho4", path_to_wallet);
+            // FIXME At time of writing, loadCredentials() causes OOM exceptions and StackOverflow
+            // FIXME has my back on this I swear to god.
+            // FIXME Current workararound is to load the private key directly - this is a sandbox
+            // FIXME app so fuck it...
+            //log.info("Fetching wallet...");
+            //String path_to_wallet = getPathToWallet();
+            //if (path_to_wallet == null || path_to_wallet.isEmpty()) {
+            //    log.error("Got empty path to the wallet, can't construct activity...");
+            //    return;
+            //}
+            //log.info("Got path to wallet: " + path_to_wallet + "\nLoading credentials...");
+            // FIXME credentials = WalletUtils.loadCredentials("Xgnebvkho4", path_to_wallet);
+            credentials = Credentials.create("88a774a7dbd5591191164ef441c4c71267261a69bf92f17a530cb068bd5b1fd0");
         }
         catch (Exception e) {
             log.error(e.toString());
@@ -69,10 +74,10 @@ public class MainActivity extends AppCompatActivity {
                 "Gas price:\t\t" + ManagedTransaction.GAS_PRICE.toString() + "\n" +
                 "Gas limit:\t\t" + Contract.GAS_LIMIT.toString());
         got_credentials = true;
-/*        contract = SecondPriceAuction.load(
+        contract = SecondPriceAuction.load(
                 contractAddress,
                 web3j, credentials,
-                ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);*/
+                ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
     }
 
     private String getPathToWallet() {
