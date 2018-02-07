@@ -24,13 +24,16 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
-//import org.web3j.sample.contracts.generated.Greeter;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
+import org.web3j.utils.Convert;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class MainActivity extends AppCompatActivity {
     public static boolean got_credentials = false;
@@ -101,29 +104,107 @@ public class MainActivity extends AppCompatActivity {
         return target;
     }
 
-    /** FIXME Called when user makes an offer */
+    /** TODO Place hint in red under edittext view */
+    private void showOfferHint(String hint) {
+
+        log.warn(hint);
+    }
+    /** TODO Remove hint text */
+    private void hideOfferHint() {
+
+    }
+    public String printOfferSyntax() {
+        return "Input must be 'XXX[.XXX] [value_type]' (exactly one space!) where XXX is " +
+                "a decimal value and value_type is an optional ether unit (eth, finney, gwei, wei)";
+    }
+
+    /** Called when user makes an offer */
+    // FIXME Take the unit conversion method to a separate module, it's useful for now
+    // FIXME Also, make the callback lambdas actual handlers, so we can gray out the offer button
+    // FIXME while transaction is in the air
     public void offer(View view) {
+        hideOfferHint();
         if (!got_credentials) {
-            log.error("Credentials failed to load, can't complete call to offer()");
+            showOfferHint("Credentials failed to load, can't complete call to offer()");
             return;
         }
-        // Start by running an async call to showBids(), so that after the string parsing we can
-        // check if the user bid meets the minimum bid.
-        //
-        // Next, Parse the string and check if it's a valid Ether value - starts with a decimal
+        // Parse the string and check if it's a valid Ether value - starts with a decimal
         // number and an optional unit (eth/ether, finney, gwei, wei).
         // If no unit is given, assume wei (cheapest option if user makes a mistake).
         // Parse the string to get a value in wei, without parsing the number as a decimal
         // number (to avoid floating point errors).
-        //
-        // Wait for showBids() to return. If the minimum isn't met - return false. If it is, send
-        // the transaction (async, then call the callback). Return true if the transaction was
-        // sent successfully.
+        String offer_text = ((EditText)findViewById(R.id.offer_edittext)).getText().toString();
+        String[] text_parts = offer_text.toLowerCase().trim().split(" ");
+        if (text_parts.length > 2) {
+            showOfferHint("Bad input string '" + offer_text + "'\n" + printOfferSyntax());
+            return;
+        }
+        BigDecimal offer_value_bigdec;
+        try {
+            offer_value_bigdec = new BigDecimal(text_parts[0]);
+        } catch(Exception e) {
+            showOfferHint("Bad numerical value '" + text_parts[0] + "'\n" + printOfferSyntax());
+            return;
+        }
+        if (offer_value_bigdec.signum() < 0) {
+            showOfferHint("Input value cannot be negative! " +
+                    "Got '" + offer_value_bigdec.toString() + "'\n" + printOfferSyntax());
+            return;
+        }
+        String value_type = text_parts[1];
+        switch(value_type) {
+            case "eth":
+            case "ether":
+                offer_value_bigdec.multiply(new BigDecimal("1000000000000000000"));
+                break;
+            case "finney":
+                offer_value_bigdec.multiply(new BigDecimal("1000000000000000"));
+                break;
+            case "szabo":
+            case "microether":
+            case "micro":
+                offer_value_bigdec.multiply(new BigDecimal("1000000000000"));
+                break;
+            case "gwei":
+            case "shannon":
+            case "nanoether":
+            case "nano":
+                offer_value_bigdec.multiply(new BigDecimal("1000000000"));
+                break;
+            case "mwei":
+            case "babbage":
+            case "picoether":
+                offer_value_bigdec.multiply(new BigDecimal("1000000"));
+                break;
+            case "kwei":
+            case "ada":
+            case "femtoether":
+                offer_value_bigdec.multiply(new BigDecimal("1000"));
+                break;
+            case "wei": break;
+            default:
+                showOfferHint("Unknown Ethereum unit '" + value_type + "'\n" + printOfferSyntax());
+                return;
+        }
+        BigInteger offer_value_bigint = offer_value_bigdec.toBigInteger();
+
+        // Check if the current top bidder bid less than the new offer
+        Supplier<TransactionReceipt> bid_supplier = () -> {
+            try {
+                return contract.offer(offer_value_bigint).send();
+            } catch(Exception e) {
+                showOfferHint(e.toString());
+            }
+            return new TransactionReceipt();
+        };
+        Consumer<TransactionReceipt> bid_consumer = (transactionReceipt) -> {
+            log.info("Result of offer transaction:\n" + transactionReceipt.toString());
+            findViewById(R.id.refresh_bids_button).performClick();
+        };
+        showOfferHint("Sending transaction...");
+        CompletableFuture.supplyAsync(bid_supplier).thenAccept(bid_consumer);
     }
 
-    /** FIXME When offer() transaction returns, this should be the callback.
-     *  See Web3j documentation for implementation requirements... */
-    private void offerCB() {
 
     }
 
