@@ -1,7 +1,7 @@
 package com.example.dori.sandbox;
 
-import android.content.Intent;
 import android.content.res.AssetManager;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,7 +12,6 @@ import com.example.dori.SecondPriceAuction;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +21,8 @@ import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Contract;
@@ -205,7 +206,32 @@ public class MainActivity extends AppCompatActivity {
         CompletableFuture.supplyAsync(bid_supplier).thenAccept(bid_consumer);
     }
 
+    /** Call to see current user balance */
+    public void updateBalance(View view) {
+        try {
+            EthGetBalance ethGetBalance = web3j
+                    .ethGetBalance(credentials.getAddress(), DefaultBlockParameterName.LATEST)
+                    .sendAsync()
+                    .get();
+            BigInteger wei = ethGetBalance.getBalance();
+            log.info("Address '" + credentials.getAddress() + "' has got a balance of " + wei.toString() + " wei");
+            ((TextView)findViewById(R.id.my_balance_textview)).setText(wei.toString() + " wei");
+        } catch(Exception e) {
+            log.error(e.toString());
+        }
+    }
 
+    /** Use these to fetch the bids */
+    private Supplier<BigInteger> getBidSupplier(int index) {
+        assert(index == 0 || index == 1);
+        return () -> {
+            try {
+                return contract.bids(BigInteger.valueOf(index)).send();
+            } catch(Exception e) {
+                showOfferHint(e.toString());
+            }
+            return BigInteger.valueOf(-1);
+        };
     }
 
     /** Called when user requests to see the current bids */
@@ -214,22 +240,28 @@ public class MainActivity extends AppCompatActivity {
             log.error("Credentials failed to load, can't complete call to showBids()");
             return;
         }
-
-        BigInteger winner_bid;
-        BigInteger runner_up_bid;
-        log.info("Fetching bids...");
-        try {
-            winner_bid = contract.bids(new BigInteger("0")).send();
-            runner_up_bid = contract.bids(new BigInteger("1")).send();
+        // After we get the result we need to perform UI changes. The callback will be in thread
+        // context, so pass the Consumer logic a handler (see usage in setBidText)
+        Handler handler = new Handler();
+        CompletableFuture.supplyAsync(getBidSupplier(0))
+                .thenAccept((x) -> { setBidText(x, true, handler); });
+        CompletableFuture.supplyAsync(getBidSupplier(1))
+                .thenAccept((x) -> { setBidText(x, false, handler); });
+    }
+    private void setBidText(BigInteger wei, boolean target_winner, Handler handler) {
+        log.info("Got " + (target_winner ? "winner" : "runner-up") + " bid: " + wei.toString());
+        TextView tv;
+        if (target_winner) {
+            tv = findViewById(R.id.winner_bid_textview);
         }
-        catch(Exception e) {
-            log.error("Caught exception when calling bids(): " + e.toString());
-            return;
+        else {
+            tv = findViewById(R.id.runner_up_bid_textview);
         }
-        log.info("Done, got winner="+winner_bid.toString()+" and runner-up=" + runner_up_bid.toString());
-        TextView winner_textview = findViewById(R.id.winner_bid_textview);
-        TextView runner_up_textview = findViewById(R.id.runner_up_bid_textview);
-        winner_textview.setText(winner_bid.toString());
-        runner_up_textview.setText(runner_up_bid.toString());
+        // Setting text requires a UI change. Use the handler (we're in thread context)
+        handler.post(new Runnable(){
+            public void run() {
+                tv.setText(Convert.fromWei(wei.toString(), Convert.Unit.FINNEY).toString() + " finney");
+            }
+        });
     }
 }
