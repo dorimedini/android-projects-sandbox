@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">sandbox</string>
     <string name="edit_offer">Submit an offer</string>
     <string name="button_send">Send</string>
     <string name="current_winning_bid_button">Refresh latest bids</string>
-    <string name="winning_bid">Winner: </string>
-    <string name="runner_up_bid">Runner-up: </string>
+    <string name="winning_bid">WINNER: </string>
+    <string name="runner_up_bid">RUNNER-UP: </string>
+    <string name="refresh_balance_button">REFRESH MY BALANCE</string>
+    <string name="unknown_balance">\?</string>
 </resources>
