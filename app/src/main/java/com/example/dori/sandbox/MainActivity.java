@@ -82,6 +82,10 @@ public class MainActivity extends AppCompatActivity {
                 contractAddress,
                 web3j, credentials,
                 ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+
+        /* Init values */
+        showBids(findViewById(R.id.refresh_bids_button));
+        updateBalance(findViewById(R.id.my_balance_button));
     }
 
     private String getPathToWallet() {
