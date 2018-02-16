@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.dori.SecondPriceAuction;
+import com.example.dori.PrintableTransactionReceipt;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,7 +24,6 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
@@ -190,15 +190,15 @@ public class MainActivity extends AppCompatActivity {
         BigInteger offer_value_bigint = offer_value_bigdec.toBigInteger();
 
         // Check if the current top bidder bid less than the new offer
-        Supplier<TransactionReceipt> bid_supplier = () -> {
+        Supplier<PrintableTransactionReceipt> bid_supplier = () -> {
             try {
-                return contract.offer(offer_value_bigint).send();
+                return new PrintableTransactionReceipt(contract.offer(offer_value_bigint).send());
             } catch(Exception e) {
                 showOfferHint(e.toString());
             }
-            return new TransactionReceipt();
+            return new PrintableTransactionReceipt();
         };
-        Consumer<TransactionReceipt> bid_consumer = (transactionReceipt) -> {
+        Consumer<PrintableTransactionReceipt> bid_consumer = (transactionReceipt) -> {
             log.info("Result of offer transaction:\n" + transactionReceipt.toString());
             findViewById(R.id.refresh_bids_button).performClick();
         };
