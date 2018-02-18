@@ -202,12 +202,20 @@ public class MainActivity extends AppCompatActivity {
             }
             return new PrintableTransactionReceipt();
         };
-        Consumer<PrintableTransactionReceipt> bid_consumer = (transactionReceipt) -> {
-            log.info("Result of offer transaction:\n" + transactionReceipt.toString());
-            findViewById(R.id.refresh_bids_button).performClick();
+        Consumer<PrintableTransactionReceipt> bid_consumer = (tx) -> {
+            try {
+                log.info("Result of offer transaction:\n" + tx.toString());
+                showBidsAux(); /* FIXME: This needs to be done on the UI thread, with a handler */
+            } catch(Exception e) {
+                log.error(e.toString());
+            }
         };
         showOfferHint("Sending transaction...");
-        CompletableFuture.supplyAsync(bid_supplier).thenAccept(bid_consumer);
+        try {
+            CompletableFuture.supplyAsync(bid_supplier).thenAccept(bid_consumer);
+        } catch(Exception e) {
+            log.error(e.toString());
+        }
     }
 
     /** Call to see current user balance */
@@ -239,7 +247,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /** Called when user requests to see the current bids */
-    public void showBids(View view) {
+    public void showBids(View view) { showBidsAux(); }
+    private void showBidsAux() {
         if (!got_credentials) {
             log.error("Credentials failed to load, can't complete call to showBids()");
             return;
