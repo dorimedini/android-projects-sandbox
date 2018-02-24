@@ -118,10 +118,6 @@ public class MainActivity extends AppCompatActivity {
     private void hideOfferHint() {
 
     }
-    public String printOfferSyntax() {
-        return "Input must be 'XXX[.XXX] [value_type]' (exactly one space!) where XXX is " +
-                "a decimal value and value_type is an optional ether unit (eth, finney, gwei, wei)";
-    }
 
     /** Called when user makes an offer */
     // FIXME Take the unit conversion method to a separate module, it's useful for now
@@ -139,64 +135,17 @@ public class MainActivity extends AppCompatActivity {
         // Parse the string to get a value in wei, without parsing the number as a decimal
         // number (to avoid floating point errors).
         String offer_text = ((EditText)findViewById(R.id.offer_edittext)).getText().toString();
-        String[] text_parts = offer_text.toLowerCase().trim().split(" ");
-        if (text_parts.length > 2) {
-            showOfferHint("Bad input string '" + offer_text + "'\n" + printOfferSyntax());
+        StringBuilder sb = new StringBuilder();
+        BigInteger offer_value = EthUtils.strToWei(offer_text, sb);
+        if (offer_value == EthUtils.INVALID_WEI_VALUE) {
+            showOfferHint(sb.toString());
             return;
         }
-        BigDecimal offer_value_bigdec;
-        try {
-            offer_value_bigdec = new BigDecimal(text_parts[0]);
-        } catch(Exception e) {
-            showOfferHint("Bad numerical value '" + text_parts[0] + "'\n" + printOfferSyntax());
-            return;
-        }
-        if (offer_value_bigdec.signum() < 0) {
-            showOfferHint("Input value cannot be negative! " +
-                    "Got '" + offer_value_bigdec.toString() + "'\n" + printOfferSyntax());
-            return;
-        }
-        String value_type = text_parts[1];
-        switch(value_type) {
-            case "eth":
-            case "ether":
-                offer_value_bigdec.multiply(new BigDecimal("1000000000000000000"));
-                break;
-            case "finney":
-                offer_value_bigdec.multiply(new BigDecimal("1000000000000000"));
-                break;
-            case "szabo":
-            case "microether":
-            case "micro":
-                offer_value_bigdec.multiply(new BigDecimal("1000000000000"));
-                break;
-            case "gwei":
-            case "shannon":
-            case "nanoether":
-            case "nano":
-                offer_value_bigdec.multiply(new BigDecimal("1000000000"));
-                break;
-            case "mwei":
-            case "babbage":
-            case "picoether":
-                offer_value_bigdec.multiply(new BigDecimal("1000000"));
-                break;
-            case "kwei":
-            case "ada":
-            case "femtoether":
-                offer_value_bigdec.multiply(new BigDecimal("1000"));
-                break;
-            case "wei": break;
-            default:
-                showOfferHint("Unknown Ethereum unit '" + value_type + "'\n" + printOfferSyntax());
-                return;
-        }
-        BigInteger offer_value_bigint = offer_value_bigdec.toBigInteger();
 
         // Check if the current top bidder bid less than the new offer
         Supplier<PrintableTransactionReceipt> bid_supplier = () -> {
             try {
-                return new PrintableTransactionReceipt(contract.offer(offer_value_bigint).send());
+                return new PrintableTransactionReceipt(contract.offer(offer_value).send());
             } catch(Exception e) {
                 showOfferHint(e.toString());
             }
