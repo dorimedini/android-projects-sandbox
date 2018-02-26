@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Check if the current top bidder bid less than the new offer
-        Supplier<PrintableTransactionReceipt> bid_supplier = () -> {
+        Supplier<PrintableTransactionReceipt> offer_supplier = () -> {
             try {
                 return new PrintableTransactionReceipt(contract.offer(offer_value).send());
             } catch(Exception e) {
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return new PrintableTransactionReceipt();
         };
-        Consumer<PrintableTransactionReceipt> bid_consumer = (tx) -> {
+        Consumer<PrintableTransactionReceipt> offer_consumer = (tx) -> {
             try {
                 log.info("Result of offer transaction:\n" + tx.toString());
                 new Handler(Looper.getMainLooper()).post(() -> {
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
         hideOfferHint();
         disableOffer();
         try {
-            CompletableFuture.supplyAsync(bid_supplier).thenAccept(bid_consumer);
+            CompletableFuture.supplyAsync(offer_supplier).thenAccept(offer_consumer);
         } catch(Exception e) {
             log.error(e.toString());
         }
