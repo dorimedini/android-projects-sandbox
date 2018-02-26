@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private static Web3j web3j;
     private static Credentials credentials;
     private static SecondPriceAuction contract;
+    private static boolean allow_offer = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         /* Init values */
         showBids(findViewById(R.id.refresh_bids_button));
         updateBalance(findViewById(R.id.my_balance_button));
+        enableOffer();
     }
 
     private String getPathToWallet() {
@@ -118,6 +120,14 @@ public class MainActivity extends AppCompatActivity {
     private void hideOfferHint() {
 
     }
+    private void enableOffer() {
+        allow_offer = true;
+        findViewById(R.id.offer_button).setEnabled(true);
+    }
+    private void disableOffer() {
+        findViewById(R.id.offer_button).setEnabled(false);
+        allow_offer = true;
+    }
 
     /** Called when user makes an offer */
     // FIXME Take the unit conversion method to a separate module, it's useful for now
@@ -129,11 +139,12 @@ public class MainActivity extends AppCompatActivity {
             showOfferHint("Credentials failed to load, can't complete call to offer()");
             return;
         }
-        // Parse the string and check if it's a valid Ether value - starts with a decimal
-        // number and an optional unit (eth/ether, finney, gwei, wei).
-        // If no unit is given, assume wei (cheapest option if user makes a mistake).
-        // Parse the string to get a value in wei, without parsing the number as a decimal
-        // number (to avoid floating point errors).
+        if (!allow_offer) {
+            showOfferHint("Offering is currently disabled, possibly due to a previous in-flight offer");
+            return;
+        }
+
+        // Parse the string as an Eth value. On failure, show the user the error message.
         String offer_text = ((EditText)findViewById(R.id.offer_edittext)).getText().toString();
         BigInteger offer_value = EthUtils.strToWei(offer_text);
         if (offer_value.equals(EthUtils.INVALID_WEI_VALUE)) {
@@ -161,7 +172,11 @@ public class MainActivity extends AppCompatActivity {
                 log.error(e.toString());
             }
         };
-        showOfferHint("Sending transaction...");
+
+        // Go!
+        log.info("Sending transaction...");
+        hideOfferHint();
+        disableOffer();
         try {
             CompletableFuture.supplyAsync(bid_supplier).thenAccept(bid_consumer);
         } catch(Exception e) {
