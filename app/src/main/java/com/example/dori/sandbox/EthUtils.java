@@ -1,16 +1,14 @@
 package com.example.dori.sandbox;
 
+import android.graphics.Bitmap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static java.lang.Math.pow;
 
 /**
  * Created by dori on 2/23/2018.
@@ -117,5 +115,68 @@ class EthUtils {
             return INVALID_WEI_VALUE;
         }
         return offer_value;
+    }
+
+    /**
+     * Converts an address in the Ethereum space into an icon (the output of Bitmap.createBitmap()).
+     *
+     * <p>Assigns pixels to colors based on the value of the address.
+     *
+     * @param   str The address to parse. After removing the possible preceding '0x', there must be
+     *              at least 40 characters in the input strrng.
+     * @return  Bitmap
+     */
+    static Bitmap addrToBitmap(String addr) {
+        // Setup.
+        // Output dimensions are as follows: 5 pixels hieght, 25 pixels across divided into 5
+        // squares.
+        int height = 15;
+        int total_squares = 5;
+        int width = total_squares * height;
+        int total_pixels = height * width;
+        Bitmap default_bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+
+        // Sanity
+        addr = addr.replaceFirst("^0x", "");
+        if (addr.length() < 40) {
+            log.error("Input string '" + addr + "' too short!");
+            return default_bitmap;
+        }
+        addr = addr.substring(addr.length()-40, addr.length());
+
+        // Parse first 40 characters and make sure they're hex values!
+        BigInteger addr_bigint;
+        try {
+            addr_bigint = new BigInteger(addr, 16);
+        } catch(NumberFormatException e) {
+            log.error(e.toString());
+            return default_bitmap;
+        }
+
+        // Convert to colors.
+        BigInteger mod_value = BigInteger.valueOf(2);
+        mod_value = mod_value.pow(32);
+        int[] colors = new int[total_squares];
+        for (int col=0; col < total_squares; ++col) {
+            colors[col] = addr_bigint.mod(mod_value).intValue();
+            addr_bigint = addr_bigint.divide(mod_value);
+        }
+        log.info("Got colors: " + colors.toString());
+
+        // Convert to int array
+        int[] pixels = new int[total_pixels];
+        for (int row=0; row < height; ++row) {
+            for (int col=0; col < width; ++col) {
+                pixels[width * row + col] = colors[col / height];
+            }
+        }
+
+        // That's it! create the bitmap
+        try {
+            return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.RGB_565);
+        } catch (IllegalArgumentException e) {
+            log.error(e.toString());
+            return default_bitmap;
+        }
     }
 }
