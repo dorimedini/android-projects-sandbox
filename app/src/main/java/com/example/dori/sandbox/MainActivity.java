@@ -116,12 +116,12 @@ public class MainActivity extends AppCompatActivity {
 
     /** TODO Place hint in red under edittext view */
     private void showOfferHint(String hint) {
-
+        ((TextView)findViewById(R.id.offer_hint_textview)).setText(hint);
         log.warn(hint);
     }
     /** TODO Remove hint text */
     private void hideOfferHint() {
-
+        ((TextView)findViewById(R.id.offer_hint_textview)).setText("");
     }
     private void enableOffer() {
         allow_offer = true;
