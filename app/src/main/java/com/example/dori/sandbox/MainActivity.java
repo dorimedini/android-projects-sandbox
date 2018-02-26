@@ -170,11 +170,19 @@ public class MainActivity extends AppCompatActivity {
         Consumer<PrintableTransactionReceipt> offer_consumer = (tx) -> {
             try {
                 log.info("Result of offer transaction:\n" + tx.toString());
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    showBidsAux();
-                    enableOffer();
-                });
             } catch(Exception e) {
+                log.error(e.toString());
+            }
+            try {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    try {
+                        showBidsAux();
+                        enableOffer();
+                    } catch (Exception e) {
+                        log.error(e.toString());
+                    }
+                });
+            } catch (Exception e) {
                 log.error(e.toString());
             }
         };
