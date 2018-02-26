@@ -7,6 +7,8 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
  * Created by dori on 2/14/2018.
  */
 
+// FIXME Commit 235297f to web3j offers built-in toString method for TransactionReceipt, making this
+// FIXME class obsolete
 public class PrintableTransactionReceipt {
     private TransactionReceipt tx;
 
