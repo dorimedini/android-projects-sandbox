@@ -31,7 +31,6 @@ import org.web3j.tx.ManagedTransaction;
 import org.web3j.utils.Convert;
 
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
