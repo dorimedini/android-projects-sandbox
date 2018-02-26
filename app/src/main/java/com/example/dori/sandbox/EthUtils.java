@@ -1,5 +1,8 @@
 package com.example.dori.sandbox;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -13,9 +16,13 @@ import static java.lang.Math.pow;
  * Created by dori on 2/23/2018.
  */
 
-public class EthUtils {
+/**
+ * FIXME Hopefully we'll be able to get rid of this class as web3j develops
+ */
+class EthUtils {
 
-    public static final BigInteger INVALID_WEI_VALUE = BigInteger.valueOf(-1);
+    private static final Logger log = LoggerFactory.getLogger(EthUtils.class);
+    static final BigInteger INVALID_WEI_VALUE = BigInteger.valueOf(-1);
 
     /**
      * Converts a string into an Ether value.
@@ -24,10 +31,9 @@ public class EthUtils {
      * string describing the units used.
      *
      * @param  str The string to be parsed as an Ether value.
-     * @param  msg If an error is encountered, the error string will be appended to the msg.
      * @return BigInteger The input value, in wei; or {@see INVALID_WEI_VALUE} on error.
      */
-    public static BigInteger strToWei(String str, StringBuilder msg) {
+    static BigInteger strToWei(String str) {
 
         /** Mapping of text units to multipliers.
          *  If X is a value in unit Y, then X*weiPerUnit.get(Y) is the value of X in wei. */
@@ -60,31 +66,36 @@ public class EthUtils {
 
 
         String[] text_parts = str.toLowerCase().trim().split(" ");
-
         if (text_parts.length > 2) {
-            msg.append("Invalid input string '" + str + "', must be 'XXX[ YYY]' where XXX is " +
-                    "an integer and YYY is an (optional) unit name.");
+            log.error("Invalid input string '" + str + "', must be 'XXX[ YYY]' " +
+                    "where XXX is an integer and YYY is an (optional) unit name.");
+            return INVALID_WEI_VALUE;
+        }
+        if (text_parts[0].equals("")) {
+            log.error("No text entered!");
             return INVALID_WEI_VALUE;
         }
 
         // Get value, if there's no units assume wei (for cheapest human error)
-        try {
-            if (!text_parts[0].matches("[1-9]\\d*")) {
-                if (text_parts[0].matches("[1-9]\\d*\\.?\\d*")) {
-                    msg.append("No decimal values allowed; use smaller units (one of <" + valid_units + ">)");
-                    return INVALID_WEI_VALUE;
-                }
-                msg.append("Invalid integer value '" + text_parts[0] + "'");
+        BigInteger offer_value;
+        String regex_integer = "[1-9]\\d*";
+        String regex_decimal = regex_integer + "\\.?\\d*";
+        if (!text_parts[0].matches(regex_integer)) {
+            if (text_parts[0].matches(regex_decimal)) {
+                log.error("No decimal values allowed; use smaller units (one of <" + valid_units + ">)");
                 return INVALID_WEI_VALUE;
             }
-        } catch (Exception e) {
-            msg.append("Caught exception: " + e.toString());
+            log.error("Invalid integer value '" + text_parts[0] + "'");
             return INVALID_WEI_VALUE;
         }
-        BigInteger offer_value = new BigInteger(text_parts[0]);
+        try {
+            offer_value = new BigInteger(text_parts[0]);
+        } catch (Exception e) {
+            log.error("Caught exception: " + e.toString());
+            return INVALID_WEI_VALUE;
+        }
         if (offer_value.signum() < 0) {
-            msg.append("Input value cannot be negative! " +
-                    "Got '" + offer_value.toString() + "'");
+            log.error("Input value cannot be negative! Got '" + offer_value.toString() + "'");
             return INVALID_WEI_VALUE;
         }
         if (text_parts.length == 1) { // No units
@@ -95,15 +106,14 @@ public class EthUtils {
         String units = text_parts[1];
         boolean valid_unit = false;
         for(String key: weiPerUnit.keySet()) {
-            if (key == units) {
-                offer_value.multiply(weiPerUnit.get(units));
+            if (key.equals(units)) {
+                offer_value = offer_value.multiply(weiPerUnit.get(units));
                 valid_unit = true;
                 break;
             }
         }
         if (!valid_unit) {
-            msg.append("Unknown Ethereum unit '" + units + "', must be one of " +
-                    "<" + valid_units + ">");
+            log.error("Unknown Ethereum unit '" + units + "', must be one of <" + valid_units + ">");
             return INVALID_WEI_VALUE;
         }
         return offer_value;

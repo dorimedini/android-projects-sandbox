@@ -135,10 +135,9 @@ public class MainActivity extends AppCompatActivity {
         // Parse the string to get a value in wei, without parsing the number as a decimal
         // number (to avoid floating point errors).
         String offer_text = ((EditText)findViewById(R.id.offer_edittext)).getText().toString();
-        StringBuilder sb = new StringBuilder();
-        BigInteger offer_value = EthUtils.strToWei(offer_text, sb);
-        if (offer_value == EthUtils.INVALID_WEI_VALUE) {
-            showOfferHint(sb.toString());
+        BigInteger offer_value = EthUtils.strToWei(offer_text);
+        if (offer_value.equals(EthUtils.INVALID_WEI_VALUE)) {
+            log.error("strToWei() returned bad int value!");
             return;
         }
 
