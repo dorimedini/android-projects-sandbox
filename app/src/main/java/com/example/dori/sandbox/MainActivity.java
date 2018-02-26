@@ -161,11 +161,11 @@ public class MainActivity extends AppCompatActivity {
         // Check if the current top bidder bid less than the new offer
         Supplier<PrintableTransactionReceipt> offer_supplier = () -> {
             try {
-                return new PrintableTransactionReceipt(contract.offer(offer_value).send());
+                return new PrintableTransactionReceipt(contract, contract.offer(offer_value).send());
             } catch(Exception e) {
                 showOfferHint(e.toString());
             }
-            return new PrintableTransactionReceipt();
+            return new PrintableTransactionReceipt(contract);
         };
         Consumer<PrintableTransactionReceipt> offer_consumer = (tx) -> {
             try {
