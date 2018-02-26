@@ -55,18 +55,21 @@ public class MainActivity extends AppCompatActivity {
         web3j = Web3jFactory.build(new HttpService(
                 "https://kovan.infura.io/ku5IkS4NTM4PDhwmc5iI"));
         try {
-            // FIXME At time of writing, loadCredentials() causes OOM exceptions and StackOverflow
-            // FIXME has my back on this I swear to god.
-            // FIXME Current workararound is to load the private key directly - this is a sandbox
-            // FIXME app so fuck it...
-            //log.info("Fetching wallet...");
-            //String path_to_wallet = getPathToWallet();
-            //if (path_to_wallet == null || path_to_wallet.isEmpty()) {
-            //    log.error("Got empty path to the wallet, can't construct activity...");
-            //    return;
-            //}
-            //log.info("Got path to wallet: " + path_to_wallet + "\nLoading credentials...");
-            // FIXME credentials = WalletUtils.loadCredentials("Xgnebvkho4", path_to_wallet);
+            /**
+             * FIXME
+             * At time of writing, loadCredentials() causes OOM exceptions and StackOverflow
+             * has my back on this I swear to god.
+             * Current workararound is to load the private key directly - this is a sandbox
+             * app so fuck it...
+            log.info("Fetching wallet...");
+            String path_to_wallet = getPathToWallet();
+            if (path_to_wallet == null || path_to_wallet.isEmpty()) {
+                log.error("Got empty path to the wallet, can't construct activity...");
+                return;
+            }
+            log.info("Got path to wallet: " + path_to_wallet + "\nLoading credentials...");
+             */
+            // FIXME credentials = WalletUtils.loadCredentials(<PASSWORD>, path_to_wallet);
             credentials = Credentials.create("88a774a7dbd5591191164ef441c4c71267261a69bf92f17a530cb068bd5b1fd0");
         }
         catch (Exception e) {
@@ -130,11 +133,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /** Called when user makes an offer */
-    // FIXME Take the unit conversion method to a separate module, it's useful for now
     // FIXME Also, make the callback lambdas actual handlers, so we can gray out the offer button
     // FIXME while transaction is in the air
     public void offer(View view) {
+
+        // Cleanup
         hideOfferHint();
+
+        // Sanity
         if (!got_credentials) {
             showOfferHint("Credentials failed to load, can't complete call to offer()");
             return;
