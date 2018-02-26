@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     public static boolean got_credentials = false;
     public static final String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
-    private static final String contractAddress = "0x356a73cd1e3511511f87159a4e072f28ae0524be";
+    private static final String contractAddress = "0x74e1fa885a6c3a9bf23866f5560d8515fc691b74";
     private static Web3j web3j;
     private static Credentials credentials;
     private static SecondPriceAuction contract;
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         log.info("Connecting smart contract at address " + contractAddress);
         web3j = Web3jFactory.build(new HttpService(
-                "https://ropsten.infura.io/ku5IkS4NTM4PDhwmc5iI"));
+                "https://kovan.infura.io/ku5IkS4NTM4PDhwmc5iI"));
         try {
             // FIXME At time of writing, loadCredentials() causes OOM exceptions and StackOverflow
             // FIXME has my back on this I swear to god.
