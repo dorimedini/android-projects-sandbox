@@ -2,6 +2,7 @@ package com.example.dori.sandbox;
 
 import android.content.res.AssetManager;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -153,7 +154,10 @@ public class MainActivity extends AppCompatActivity {
         Consumer<PrintableTransactionReceipt> bid_consumer = (tx) -> {
             try {
                 log.info("Result of offer transaction:\n" + tx.toString());
-                showBidsAux(); /* FIXME: This needs to be done on the UI thread, with a handler */
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    showBidsAux();
+                    enableOffer();
+                });
             } catch(Exception e) {
                 log.error(e.toString());
             }
@@ -219,10 +223,9 @@ public class MainActivity extends AppCompatActivity {
             tv = findViewById(R.id.runner_up_bid_textview);
         }
         // Setting text requires a UI change. Use the handler (we're in thread context)
-        handler.post(new Runnable(){
-            public void run() {
-                tv.setText(Convert.fromWei(wei.toString(), Convert.Unit.FINNEY).toString() + " finney");
-            }
+        handler.post(() -> {
+            String text = Convert.fromWei(wei.toString(), Convert.Unit.FINNEY).toString() + " finney";
+            tv.setText(text);
         });
     }
 }
