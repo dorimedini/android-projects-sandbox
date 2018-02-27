@@ -8,94 +8,101 @@
     tools:ignore="ExtraText">
 
     <TextView
-        android:id="@+id/winner_textview"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/winning_bid"
+        android:text="@string/app_title"
         android:textAlignment="center"
-        android:textSize="52sp"
-        app:layout_constraintBottom_toTopOf="@+id/winner_bid_textview"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <TextView
-        android:id="@+id/winner_bid_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:ellipsize="end"
-        android:textAlignment="center"
-        android:textSize="52sp"
-        android:text="@string/unknown_balance"
-        app:layout_constraintBottom_toTopOf="@+id/runner_up_textview"
+        android:textSize="40sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/winner_textview" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/runner_up_textview"
-        android:layout_width="wrap_content"
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/bid_table"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/runner_up_bid"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/runner_up_bid_textview"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/winner_bid_textview" />
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:stretchColumns="1"
+        app:layout_constraintTop_toBottomOf="@id/title">
 
-    <TextView
-        android:id="@+id/runner_up_bid_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/unknown_balance"
-        app:layout_constraintBottom_toTopOf="@+id/refresh_bids_button"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/runner_up_textview" />
+        <TableRow>
+
+            <TextView
+                android:id="@+id/winner_textview"
+                android:text="@string/winner_title"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/winner_bid_textview"
+                android:ellipsize="end"
+                android:text="@string/unknown_balance"
+                android:textSize="24sp"
+                app:layout_constraintBaseline_toBaselineOf="@id/winner_textview" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/runner_up_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/runner_up_title"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/runner_up_bid_textview"
+                android:ellipsize="end"
+                android:text="@string/unknown_balance"
+                android:textSize="24sp"
+                app:layout_constraintBaseline_toBaselineOf="@id/runner_up_bid_textview" />
+        </TableRow>
+    </TableLayout>
 
     <Button
         android:id="@+id/refresh_bids_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginTop="16dp"
         android:onClick="showBids"
         android:text="@string/current_winning_bid_button"
-        app:layout_constraintBottom_toTopOf="@+id/my_balance_textview"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/runner_up_bid_textview" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bid_table" />
 
     <TextView
         android:id="@+id/my_balance_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/unknown_balance"
-        app:layout_constraintBottom_toTopOf="@+id/my_balance_button"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@id/my_balance_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/my_balance_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="72dp"
+        android:layout_marginStart="8dp"
         android:onClick="updateBalance"
         android:text="@string/refresh_balance_button"
-        app:layout_constraintBottom_toTopOf="@+id/offer_hint_textview"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintBottom_toTopOf="@id/offer_edittext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/offer_hint_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="4dp"
         android:textColor="@android:color/holo_red_dark"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@id/offer_edittext"
@@ -106,24 +113,27 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:ems="10"
         android:hint="@string/edit_offer"
-        android:inputType="textPersonName"
+        android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/offer_button"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/offer_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:onClick="offer"
         android:text="@string/button_send"
         app:layout_constraintBaseline_toBaselineOf="@+id/offer_edittext"
+        app:layout_constraintBottom_toBottomOf="@id/offer_edittext"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/offer_edittext" />
 
 

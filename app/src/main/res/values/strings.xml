@@ -1,9 +1,13 @@
 <resources>
+    <string name="app_name">Second Price Auction</string>
+    <string name="app_title">Second Price Auction</string>
     <string name="edit_offer">Submit an offer</string>
     <string name="button_send">Send</string>
     <string name="current_winning_bid_button">Refresh latest bids</string>
-    <string name="winning_bid">WINNER: </string>
-    <string name="runner_up_bid">RUNNER-UP: </string>
+    <string name="winner_title">1st: </string>
+    <string name="runner_up_title">2nd: </string>
     <string name="refresh_balance_button">REFRESH MY BALANCE</string>
-    <string name="unknown_balance">\?</string>
+    <string name="unknown_balance">(unknown)</string>
+    <string name="winner_icon">1st place icon</string>
+    <string name="runner_up_icon">2nd place icon</string>
 </resources>
