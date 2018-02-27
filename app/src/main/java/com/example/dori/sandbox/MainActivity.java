@@ -152,9 +152,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Parse the string as an Eth value. On failure, show the user the error message.
         String offer_text = ((EditText)findViewById(R.id.offer_edittext)).getText().toString();
-        BigInteger offer_value = EthUtils.strToWei(offer_text);
+        StringBuilder sb = new StringBuilder();
+        BigInteger offer_value = EthUtils.strToWei(offer_text, sb);
         if (offer_value.equals(EthUtils.INVALID_WEI_VALUE)) {
-            log.error("strToWei() returned bad int value!");
+            showOfferHint(sb.toString());
             return;
         }
 

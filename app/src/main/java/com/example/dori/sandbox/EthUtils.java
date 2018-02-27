@@ -28,10 +28,11 @@ class EthUtils {
      * <p>Syntax is "XXX[ YYY]" where XXX is an integer and YYY is an optional
      * string describing the units used.
      *
-     * @param  str The string to be parsed as an Ether value.
+     * @param   str The string to be parsed as an Ether value.
+     * @param   sb  On error, the message will be returned here.
      * @return BigInteger The input value, in wei; or {@see INVALID_WEI_VALUE} on error.
      */
-    static BigInteger strToWei(String str) {
+    static BigInteger strToWei(String str, StringBuilder sb) {
 
         /** Mapping of text units to multipliers.
          *  If X is a value in unit Y, then X*weiPerUnit.get(Y) is the value of X in wei. */
@@ -65,12 +66,14 @@ class EthUtils {
 
         String[] text_parts = str.toLowerCase().trim().split(" ");
         if (text_parts.length > 2) {
-            log.error("Invalid input string '" + str + "', must be 'XXX[ YYY]' " +
-                    "where XXX is an integer and YYY is an (optional) unit name.");
+            sb.append("Invalid input string '")
+                    .append(str)
+                    .append("', must be 'XXX[ YYY]' ")
+                    .append("where XXX is an integer and YYY is an (optional) unit name.");
             return INVALID_WEI_VALUE;
         }
         if (text_parts[0].equals("")) {
-            log.error("No text entered!");
+            sb.append("No text entered!");
             return INVALID_WEI_VALUE;
         }
 
@@ -80,20 +83,27 @@ class EthUtils {
         String regex_decimal = regex_integer + "\\.?\\d*";
         if (!text_parts[0].matches(regex_integer)) {
             if (text_parts[0].matches(regex_decimal)) {
-                log.error("No decimal values allowed; use smaller units (one of <" + valid_units + ">)");
+                sb.append("No decimal values allowed; use smaller units (one of <")
+                        .append(valid_units)
+                        .append(">)");
                 return INVALID_WEI_VALUE;
             }
-            log.error("Invalid integer value '" + text_parts[0] + "'");
+            sb.append("Invalid integer value '")
+                    .append(text_parts[0])
+                    .append("'");
             return INVALID_WEI_VALUE;
         }
         try {
             offer_value = new BigInteger(text_parts[0]);
         } catch (Exception e) {
-            log.error("Caught exception: " + e.toString());
+            sb.append("Caught exception: ")
+                    .append(e.toString());
             return INVALID_WEI_VALUE;
         }
         if (offer_value.signum() < 0) {
-            log.error("Input value cannot be negative! Got '" + offer_value.toString() + "'");
+            sb.append("Input value cannot be negative! Got '")
+                    .append(offer_value.toString())
+                    .append("'");
             return INVALID_WEI_VALUE;
         }
         if (text_parts.length == 1) { // No units
@@ -111,7 +121,11 @@ class EthUtils {
             }
         }
         if (!valid_unit) {
-            log.error("Unknown Ethereum unit '" + units + "', must be one of <" + valid_units + ">");
+            sb.append("Unknown Ethereum unit '")
+                    .append(units)
+                    .append("', must be one of <")
+                    .append(valid_units)
+                    .append(">");
             return INVALID_WEI_VALUE;
         }
         return offer_value;
