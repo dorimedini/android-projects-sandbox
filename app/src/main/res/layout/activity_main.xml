@@ -33,8 +33,10 @@
 
             <TextView
                 android:id="@+id/winner_textview"
+                android:paddingEnd="2dp"
+                android:paddingStart="2dp"
                 android:text="@string/winner_title"
-                android:textAlignment="center"
+                android:textAlignment="textStart"
                 android:textSize="24sp" />
 
             <TextView
@@ -49,10 +51,12 @@
 
             <TextView
                 android:id="@+id/runner_up_textview"
+                android:paddingEnd="2dp"
+                android:paddingStart="2dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/runner_up_title"
-                android:textAlignment="center"
+                android:textAlignment="textStart"
                 android:textSize="24sp" />
 
             <TextView
@@ -73,7 +77,8 @@
         android:text="@string/current_winning_bid_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bid_table" />
+        app:layout_constraintTop_toBottomOf="@id/bid_table"
+        />
 
     <TextView
         android:id="@+id/my_balance_textview"
@@ -84,14 +89,14 @@
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@id/my_balance_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
     <Button
         android:id="@+id/my_balance_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="72dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
         android:onClick="updateBalance"
         android:text="@string/refresh_balance_button"
         app:layout_constraintBottom_toTopOf="@id/offer_edittext"
