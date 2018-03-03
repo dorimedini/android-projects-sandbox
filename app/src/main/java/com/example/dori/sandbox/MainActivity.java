@@ -1,6 +1,5 @@
 package com.example.dori.sandbox;
 
-import android.content.res.AssetManager;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,17 +18,15 @@ import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 
-import java.io.File;
-import java.io.FileOutputStream;
+//import java.io.File;
+//import java.io.FileOutputStream;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
 import org.web3j.protocol.core.DefaultBlockParameterName;
@@ -39,27 +36,29 @@ import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 import org.web3j.utils.Convert;
 
-import java.io.InputStream;
 import java.math.BigInteger;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class MainActivity extends AppCompatActivity {
-    public static boolean gotCredentials = false;
+
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
     public static final String MainActivityTag = "MAIN_ACTIVITY";
 
+    public static boolean gotCredentials = false;
     private static final String contractAddress = "0x74e1fa885a6c3a9bf23866f5560d8515fc691b74";
     private static Web3j web3j;
     private static Credentials credentials;
     private static SecondPriceAuction contract;
+
     private static boolean allowOffer = false;
 
     // TODO: Design a better data lifecycle than the one currently implemented...
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        log.info("In onCreate()! Current working directory is " + getApplicationInfo().dataDir);
+        log.info("In onCreate(), current working directory is " + getApplicationInfo().dataDir);
         super.onCreate(savedInstanceState);
         AppEventsLogger.activateApp(getApplication());
     }
@@ -87,11 +86,10 @@ public class MainActivity extends AppCompatActivity {
         web3j = Web3jFactory.build(new HttpService(
                 "https://kovan.infura.io/ku5IkS4NTM4PDhwmc5iI"));
         try {
-            /**
-             * FIXME
+            /* FIXME
              * At time of writing, loadCredentials() causes OOM exceptions and StackOverflow
              * has my back on this I swear to god.
-             * Current workararound is to load the private key directly - this is a sandbox
+             * Current workaround is to load the private key directly - this is a sandbox
              * app so fuck it...
             log.info("Fetching wallet...");
             String path_to_wallet = getPathToWallet();
@@ -103,8 +101,7 @@ public class MainActivity extends AppCompatActivity {
              */
             // FIXME credentials = WalletUtils.loadCredentials(<PASSWORD>, path_to_wallet);
             credentials = Credentials.create("88a774a7dbd5591191164ef441c4c71267261a69bf92f17a530cb068bd5b1fd0");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.toString());
             return;
         }
@@ -160,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         goToLogin();
     }
 
+/*
     private String getPathToWallet() {
         String target = getCacheDir()+"/SecondPriceWallet.json";
         File f = new File(target);
@@ -180,8 +178,9 @@ public class MainActivity extends AppCompatActivity {
         }
         return target;
     }
+*/
 
-    /** TODO Place hint in red under edittext view */
+    /** TODO Place hint in red under edit-text view */
     private void showOfferHint(String hint) {
         ((TextView)findViewById(R.id.offer_hint_textview)).setText(hint);
         log.warn(hint);
@@ -271,15 +270,17 @@ public class MainActivity extends AppCompatActivity {
                     .get();
             BigInteger wei = ethGetBalance.getBalance();
             log.info("Address '" + credentials.getAddress() + "' has got a balance of " + wei.toString() + " wei");
-            ((TextView)findViewById(R.id.my_balance_textview)).setText(wei.toString() + " wei");
+            ((TextView)findViewById(R.id.my_balance_textview)).setText(String.format(Locale.US,"%d wei", wei));
         } catch(Exception e) {
             log.error(e.toString());
         }
     }
 
     /** Use these to fetch the bids */
-    private Supplier<BigInteger> getBidSupplier(int index) {
-        assert(index == 0 || index == 1);
+    private Supplier<BigInteger> getBidSupplier(int index) throws AssertionError {
+        if (BuildConfig.DEBUG && index != 0 && index != 1) {
+            throw new AssertionError("index '" + index + "' must be 0 or 1!");
+        }
         return () -> {
             try {
                 return contract.bids(BigInteger.valueOf(index)).send();
@@ -301,9 +302,9 @@ public class MainActivity extends AppCompatActivity {
         // context, so pass the Consumer logic a handler (see usage in setBidText)
         Handler handler = new Handler();
         CompletableFuture.supplyAsync(getBidSupplier(0))
-                .thenAccept((x) -> { setBidText(x, true, handler); });
+                .thenAccept(x -> setBidText(x, true, handler));
         CompletableFuture.supplyAsync(getBidSupplier(1))
-                .thenAccept((x) -> { setBidText(x, false, handler); });
+                .thenAccept(x -> setBidText(x, false, handler));
     }
     private void setBidText(BigInteger wei, boolean target_winner, Handler handler) {
         log.info("Got " + (target_winner ? "winner" : "runner-up") + " bid: " + wei.toString());
