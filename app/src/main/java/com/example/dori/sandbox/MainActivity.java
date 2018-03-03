@@ -1,20 +1,29 @@
 package com.example.dori.sandbox;
 
 import android.content.res.AssetManager;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.dori.SecondPriceAuction;
 import com.example.dori.PrintableTransactionReceipt;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,18 +48,42 @@ import java.util.function.Supplier;
 public class MainActivity extends AppCompatActivity {
     public static boolean gotCredentials = false;
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
+    public static final String MainActivityTag = "MAIN_ACTIVITY";
+
     private static final String contractAddress = "0x74e1fa885a6c3a9bf23866f5560d8515fc691b74";
     private static Web3j web3j;
     private static Credentials credentials;
     private static SecondPriceAuction contract;
     private static boolean allowOffer = false;
 
+    // TODO: Design a better data lifecycle than the one currently implemented...
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         log.info("In onCreate()! Current working directory is " + getApplicationInfo().dataDir);
         super.onCreate(savedInstanceState);
+        AppEventsLogger.activateApp(getApplication());
+    }
+    @Override
+    protected void onStart() {
+        log.info("Logging in, user is " + (LoginActivity.isLoggedIn() ? "" : "not ") + "logged in.");
+        super.onStart();
+        if (!LoginActivity.isLoggedIn()) {
+            log.info("Not logged in, going to login activity");
+            goToLogin();
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        log.info("Resuming, focusing on main activity...");
         setContentView(R.layout.activity_main);
-        log.info("Connecting smart contract at address " + contractAddress);
+        initWeb3j();
+        initFacebook();
+        initUI();
+    }
+
+    private void initWeb3j() {
+        log.info("In initWeb3j, connecting smart contract at address " + contractAddress);
         web3j = Web3jFactory.build(new HttpService(
                 "https://kovan.infura.io/ku5IkS4NTM4PDhwmc5iI"));
         try {
@@ -85,11 +118,46 @@ public class MainActivity extends AppCompatActivity {
                 contractAddress,
                 web3j, credentials,
                 ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+    }
+    private void initFacebook() {
+        log.info("In initFacebook()");
+        GraphRequest request = GraphRequest.newMeRequest(
+                AccessToken.getCurrentAccessToken(),
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        Log.v("LoginActivity", (response == null ? "null" : response.toString()));
 
-        /* Init values */
+                        // Application code
+                        try {
+                            String email = object.getString("email");
+                            Log.e(MainActivityTag, "Got email: " + email);
+                        } catch (JSONException e) {
+                            Log.e(MainActivityTag, e.toString());
+                        }
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "email");
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+    private void initUI() {
+        log.info("In initUI()");
         showBids(findViewById(R.id.refresh_bids_button));
         updateBalance(findViewById(R.id.my_balance_button));
         enableOffer();
+    }
+
+    private void goToLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+    public void logout(View view) {
+        log.info("In logout()");
+        LoginManager.getInstance().logOut();
+        goToLogin();
     }
 
     private String getPathToWallet() {
