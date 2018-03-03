@@ -182,12 +182,12 @@ public class MainActivity extends AppCompatActivity {
 
     /** TODO Place hint in red under edit-text view */
     private void showOfferHint(String hint) {
-        ((TextView)findViewById(R.id.offer_hint_textview)).setText(hint);
+        ((TextView)findViewById(R.id.offer_hint_text_view)).setText(hint);
         log.warn(hint);
     }
     /** TODO Remove hint text */
     private void hideOfferHint() {
-        ((TextView)findViewById(R.id.offer_hint_textview)).setText("");
+        ((TextView)findViewById(R.id.offer_hint_text_view)).setText("");
     }
     private void enableOffer() {
         allowOffer = true;
@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Parse the string as an Eth value. On failure, show the user the error message.
-        String offer_text = ((EditText)findViewById(R.id.offer_edittext)).getText().toString();
+        String offer_text = ((EditText)findViewById(R.id.offer_edit_text)).getText().toString();
         StringBuilder sb = new StringBuilder();
         BigInteger offer_value = EthUtils.strToWei(offer_text, sb);
         if (offer_value.equals(EthUtils.INVALID_WEI_VALUE)) {
@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
                     .get();
             BigInteger wei = ethGetBalance.getBalance();
             log.info("Address '" + credentials.getAddress() + "' has got a balance of " + wei.toString() + " wei");
-            ((TextView)findViewById(R.id.my_balance_textview)).setText(String.format(Locale.US,"%d wei", wei));
+            ((TextView)findViewById(R.id.my_balance_text_view)).setText(String.format(Locale.US,"%d wei", wei));
         } catch(Exception e) {
             log.error(e.toString());
         }
@@ -310,10 +310,10 @@ public class MainActivity extends AppCompatActivity {
         log.info("Got " + (target_winner ? "winner" : "runner-up") + " bid: " + wei.toString());
         TextView tv;
         if (target_winner) {
-            tv = findViewById(R.id.winner_bid_textview);
+            tv = findViewById(R.id.winner_bid_text_view);
         }
         else {
-            tv = findViewById(R.id.runner_up_bid_textview);
+            tv = findViewById(R.id.runner_up_bid_text_view);
         }
         // Setting text requires a UI change. Use the handler (we're in thread context)
         handler.post(() -> {

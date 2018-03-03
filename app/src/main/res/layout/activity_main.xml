@@ -34,7 +34,7 @@
 
         <TableRow>
             <TextView
-                android:id="@+id/winner_textview"
+                android:id="@+id/winner_text_view"
                 android:paddingEnd="2dp"
                 android:paddingStart="2dp"
                 android:text="@string/winner_title"
@@ -42,15 +42,15 @@
                 android:textSize="24sp"
                 />
             <TextView
-                android:id="@+id/winner_bid_textview"
+                android:id="@+id/winner_bid_text_view"
                 android:text="@string/unknown_balance"
                 android:textSize="24sp"
-                app:layout_constraintBaseline_toBaselineOf="@id/winner_textview"
+                app:layout_constraintBaseline_toBaselineOf="@id/winner_text_view"
                 />
         </TableRow>
         <TableRow>
             <TextView
-                android:id="@+id/runner_up_textview"
+                android:id="@+id/runner_up_text_view"
                 android:paddingEnd="2dp"
                 android:paddingStart="2dp"
                 android:layout_width="wrap_content"
@@ -60,10 +60,10 @@
                 android:textSize="24sp"
                 />
             <TextView
-                android:id="@+id/runner_up_bid_textview"
+                android:id="@+id/runner_up_bid_text_view"
                 android:text="@string/unknown_balance"
                 android:textSize="24sp"
-                app:layout_constraintBaseline_toBaselineOf="@id/runner_up_bid_textview"
+                app:layout_constraintBaseline_toBaselineOf="@id/runner_up_bid_text_view"
                 />
         </TableRow>
     </TableLayout>
@@ -81,7 +81,7 @@
         />
 
     <TextView
-        android:id="@+id/my_balance_textview"
+        android:id="@+id/my_balance_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -112,23 +112,23 @@
         android:layout_marginBottom="72dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/offer_edittext"
+        app:layout_constraintBottom_toTopOf="@id/offer_edit_text"
         android:onClick="logout"
         />
 
     <TextView
-        android:id="@+id/offer_hint_textview"
+        android:id="@+id/offer_hint_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:textColor="@android:color/holo_red_dark"
         android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@id/offer_edittext"
-        app:layout_constraintStart_toStartOf="@id/offer_edittext"
+        app:layout_constraintBottom_toTopOf="@id/offer_edit_text"
+        app:layout_constraintStart_toStartOf="@id/offer_edit_text"
         />
 
     <EditText
-        android:id="@+id/offer_edittext"
+        android:id="@+id/offer_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -150,11 +150,11 @@
         android:layout_marginEnd="8dp"
         android:onClick="offer"
         android:text="@string/button_send"
-        app:layout_constraintBaseline_toBaselineOf="@+id/offer_edittext"
-        app:layout_constraintBottom_toBottomOf="@id/offer_edittext"
+        app:layout_constraintBaseline_toBaselineOf="@+id/offer_edit_text"
+        app:layout_constraintBottom_toBottomOf="@id/offer_edit_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/offer_edittext"
+        app:layout_constraintStart_toEndOf="@+id/offer_edit_text"
         />
 
 
