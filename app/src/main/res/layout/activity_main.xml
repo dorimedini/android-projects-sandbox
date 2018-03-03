@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:facebook="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -18,7 +19,8 @@
         android:textSize="40sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/bid_table"
@@ -31,25 +33,22 @@
         app:layout_constraintTop_toBottomOf="@id/title">
 
         <TableRow>
-
             <TextView
                 android:id="@+id/winner_textview"
                 android:paddingEnd="2dp"
                 android:paddingStart="2dp"
                 android:text="@string/winner_title"
                 android:textAlignment="textStart"
-                android:textSize="24sp" />
-
+                android:textSize="24sp"
+                />
             <TextView
                 android:id="@+id/winner_bid_textview"
-                android:ellipsize="end"
                 android:text="@string/unknown_balance"
                 android:textSize="24sp"
-                app:layout_constraintBaseline_toBaselineOf="@id/winner_textview" />
+                app:layout_constraintBaseline_toBaselineOf="@id/winner_textview"
+                />
         </TableRow>
-
         <TableRow>
-
             <TextView
                 android:id="@+id/runner_up_textview"
                 android:paddingEnd="2dp"
@@ -58,14 +57,14 @@
                 android:layout_height="wrap_content"
                 android:text="@string/runner_up_title"
                 android:textAlignment="textStart"
-                android:textSize="24sp" />
-
+                android:textSize="24sp"
+                />
             <TextView
                 android:id="@+id/runner_up_bid_textview"
-                android:ellipsize="end"
                 android:text="@string/unknown_balance"
                 android:textSize="24sp"
-                app:layout_constraintBaseline_toBaselineOf="@id/runner_up_bid_textview" />
+                app:layout_constraintBaseline_toBaselineOf="@id/runner_up_bid_textview"
+                />
         </TableRow>
     </TableLayout>
 
@@ -125,7 +124,8 @@
         android:textColor="@android:color/holo_red_dark"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@id/offer_edittext"
-        app:layout_constraintStart_toStartOf="@id/offer_edittext" />
+        app:layout_constraintStart_toStartOf="@id/offer_edittext"
+        />
 
     <EditText
         android:id="@+id/offer_edittext"
@@ -139,7 +139,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/offer_button"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
     <Button
         android:id="@+id/offer_button"
@@ -153,7 +154,8 @@
         app:layout_constraintBottom_toBottomOf="@id/offer_edittext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/offer_edittext" />
+        app:layout_constraintStart_toEndOf="@+id/offer_edittext"
+        />
 
 
 </android.support.constraint.ConstraintLayout>
