@@ -37,14 +37,13 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class MainActivity extends AppCompatActivity {
-    public static boolean got_credentials = false;
-    public static final String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
+    public static boolean gotCredentials = false;
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
     private static final String contractAddress = "0x74e1fa885a6c3a9bf23866f5560d8515fc691b74";
     private static Web3j web3j;
     private static Credentials credentials;
     private static SecondPriceAuction contract;
-    private static boolean allow_offer = false;
+    private static boolean allowOffer = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 "Contract address:\t" + contractAddress + "\n" +
                 "Gas price:\t\t" + ManagedTransaction.GAS_PRICE.toString() + "\n" +
                 "Gas limit:\t\t" + Contract.GAS_LIMIT.toString());
-        got_credentials = true;
+        gotCredentials = true;
         contract = SecondPriceAuction.load(
                 contractAddress,
                 web3j, credentials,
@@ -124,12 +123,12 @@ public class MainActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.offer_hint_textview)).setText("");
     }
     private void enableOffer() {
-        allow_offer = true;
+        allowOffer = true;
         findViewById(R.id.offer_button).setEnabled(true);
     }
     private void disableOffer() {
         findViewById(R.id.offer_button).setEnabled(false);
-        allow_offer = true;
+        allowOffer = true;
     }
 
     /** Called when user makes an offer */
@@ -141,11 +140,11 @@ public class MainActivity extends AppCompatActivity {
         hideOfferHint();
 
         // Sanity
-        if (!got_credentials) {
+        if (!gotCredentials) {
             showOfferHint("Credentials failed to load, can't complete call to offer()");
             return;
         }
-        if (!allow_offer) {
+        if (!allowOffer) {
             showOfferHint("Offering is currently disabled, possibly due to a previous in-flight offer");
             return;
         }
@@ -226,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
     /** Called when user requests to see the current bids */
     public void showBids(View view) { showBidsAux(); }
     private void showBidsAux() {
-        if (!got_credentials) {
+        if (!gotCredentials) {
             log.error("Credentials failed to load, can't complete call to showBids()");
             return;
         }
