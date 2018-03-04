@@ -14,7 +14,6 @@ import com.example.dori.SecondPriceAuction;
 import com.example.dori.PrintableTransactionReceipt;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 
@@ -22,7 +21,6 @@ import com.facebook.login.LoginManager;
 //import java.io.FileOutputStream;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +43,7 @@ import java.util.function.Supplier;
 public class MainActivity extends AppCompatActivity {
 
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
-    public static final String MainActivityTag = "MAIN_ACTIVITY";
+    public static final String TAG = "MAIN_ACTIVITY";
 
     public static boolean gotCredentials = false;
     private static final String contractAddress = "0x74e1fa885a6c3a9bf23866f5560d8515fc691b74";
@@ -77,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         log.info("Resuming, focusing on main activity...");
         setContentView(R.layout.activity_main);
         initWeb3j();
-        initFacebook();
+        updateFacebookData();
         initUI();
     }
 
@@ -116,22 +114,19 @@ public class MainActivity extends AppCompatActivity {
                 web3j, credentials,
                 ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
     }
-    private void initFacebook() {
-        log.info("In initFacebook()");
+    private void updateFacebookData() {
+        log.info("In updateFacebookData()");
         GraphRequest request = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
-                new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(JSONObject object, GraphResponse response) {
-                        Log.v("LoginActivity", (response == null ? "null" : response.toString()));
+                (object, response) -> {
+                    Log.v("LoginActivity", (response == null ? "null" : response.toString()));
 
-                        // Application code
-                        try {
-                            String email = object.getString("email");
-                            Log.e(MainActivityTag, "Got email: " + email);
-                        } catch (JSONException e) {
-                            Log.e(MainActivityTag, e.toString());
-                        }
+                    // Application code
+                    try {
+                        String email = object.getString("email");
+                        Log.e(TAG, "Got email: " + email);
+                    } catch (JSONException e) {
+                        Log.e(TAG, e.toString());
                     }
                 });
         Bundle parameters = new Bundle();

@@ -29,7 +29,7 @@ import java.util.Arrays;
 public class LoginActivity extends AppCompatActivity {
 
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
-    public static final String LoginActivityTag = "LOGIN_ACTIVITY";
+    public static final String TAG = "LOGIN_ACTIVITY";
     private CallbackManager callbackManager;
 
     @Override
@@ -46,31 +46,31 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(LoginResult loginResult) {
                 try {
                     AccessToken token = loginResult.getAccessToken();
-                    Log.e(LoginActivityTag, "SUCCESS! Got login result '" +
+                    Log.e(TAG, "SUCCESS! Got login result '" +
                             loginResult.toString() +
                             "' with access token '" +
                             token.toString() + "'");
                     loginOK();
                 } catch (Exception e) {
-                    Log.e(LoginActivityTag, e.toString());
+                    Log.e(TAG, e.toString());
                 }
             }
             @Override
             public void onCancel() {
                 try {
-                    Log.e(LoginActivityTag, "Cancelled login");
+                    Log.e(TAG, "Cancelled login");
                     loginFailed();
                 } catch (Exception e) {
-                    Log.e(LoginActivityTag, e.toString());
+                    Log.e(TAG, e.toString());
                 }
             }
             @Override
             public void onError(FacebookException e) {
                 try {
-                    Log.e(LoginActivityTag, "Login error");
+                    Log.e(TAG, "Login error");
                     loginFailed();
                 } catch (Exception e2) {
-                    Log.e(LoginActivityTag, e2.toString());
+                    Log.e(TAG, e2.toString());
                 }
             }
         });
@@ -85,11 +85,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginFailed() {
-        Log.e(LoginActivityTag, "Failed to login!");
+        Log.e(TAG, "Failed to login!");
         goToMainActivity();
     }
     private void loginOK() {
-        Log.e(LoginActivityTag, "LoginActivity in loggedIn()");
+        Log.e(TAG, "LoginActivity in loggedIn()");
         goToMainActivity();
     }
     private void goToMainActivity() {
@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e(LoginActivityTag, "Got login activity result");
+        Log.e(TAG, "Got login activity result");
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
