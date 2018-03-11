@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -19,10 +18,6 @@ import com.facebook.login.LoginManager;
 
 //import java.io.File;
 //import java.io.FileOutputStream;
-
-import org.json.JSONException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
@@ -42,8 +37,7 @@ import java.util.function.Supplier;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
-    public static final String TAG = "MAIN_ACTIVITY";
+    public static final String TAG = MainActivity.class.toString();
 
     public static boolean gotCredentials = false;
     private static final String contractAddress = "0x74e1fa885a6c3a9bf23866f5560d8515fc691b74";
@@ -56,23 +50,23 @@ public class MainActivity extends AppCompatActivity {
     // TODO: Design a better data lifecycle than the one currently implemented...
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        log.info("In onCreate(), current working directory is " + getApplicationInfo().dataDir);
+        Log.v("In onCreate(), current working directory is " + getApplicationInfo().dataDir);
         super.onCreate(savedInstanceState);
         AppEventsLogger.activateApp(getApplication());
     }
     @Override
     protected void onStart() {
-        log.info("Logging in, user is " + (LoginActivity.isLoggedIn() ? "" : "not ") + "logged in.");
+        Log.v("Logging in, user is " + (LoginActivity.isLoggedIn() ? "" : "not ") + "logged in.");
         super.onStart();
         if (!LoginActivity.isLoggedIn()) {
-            log.info("Not logged in, going to login activity");
+            Log.v("Not logged in, going to login activity");
             goToLogin();
         }
     }
     @Override
     protected void onResume() {
         super.onResume();
-        log.info("Resuming, focusing on main activity...");
+        Log.v("Resuming, focusing on main activity...");
         setContentView(R.layout.activity_main);
         initWeb3j();
         updateFacebookData();
@@ -80,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initWeb3j() {
-        log.info("In initWeb3j, connecting smart contract at address " + contractAddress);
+        Log.v("In initWeb3j, connecting smart contract at address " + contractAddress);
         web3j = Web3jFactory.build(new HttpService(
                 "https://kovan.infura.io/ku5IkS4NTM4PDhwmc5iI"));
         try {
@@ -100,10 +94,10 @@ public class MainActivity extends AppCompatActivity {
             // FIXME credentials = WalletUtils.loadCredentials(<PASSWORD>, path_to_wallet);
             credentials = Credentials.create("88a774a7dbd5591191164ef441c4c71267261a69bf92f17a530cb068bd5b1fd0");
         } catch (Exception e) {
-            log.error(e.toString());
+            Log.e(e.toString());
             return;
         }
-        log.info("Got the following credentials:\n" + credentials.toString() + "\n" +
+        Log.v("Got the following credentials:\n" + credentials.toString() + "\n" +
                 "Calling SecondPriceAuction.load() with the following parameters:\n" +
                 "Contract address:\t" + contractAddress + "\n" +
                 "Gas price:\t\t" + ManagedTransaction.GAS_PRICE.toString() + "\n" +
@@ -115,18 +109,21 @@ public class MainActivity extends AppCompatActivity {
                 ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
     }
     private void updateFacebookData() {
-        log.info("In updateFacebookData()");
+        Log.v("In updateFacebookData()");
         GraphRequest request = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
                 (object, response) -> {
-                    Log.v("LoginActivity", (response == null ? "null" : response.toString()));
+                    Log.v(TAG, "Response: " + (response == null ? "null" : response.toString()));
+                    Log.v(TAG, "Object: " + (object == null ? "null" : object.toString()));
 
                     // Application code
-                    try {
-                        String email = object.getString("email");
-                        Log.e(TAG, "Got email: " + email);
-                    } catch (JSONException e) {
-                        Log.e(TAG, e.toString());
+                    if (object != null) {
+                        try {
+                            String email = object.getString("email");
+                            Log.e(TAG, "Got email: " + email);
+                        } catch (Exception e) {
+                            Log.e(TAG, e.toString());
+                        }
                     }
                 });
         Bundle parameters = new Bundle();
@@ -135,19 +132,19 @@ public class MainActivity extends AppCompatActivity {
         request.executeAsync();
     }
     private void initUI() {
-        log.info("In initUI()");
+        Log.v("In initUI()");
         showBids(findViewById(R.id.refresh_bids_button));
         updateBalance(findViewById(R.id.my_balance_button));
         enableOffer();
     }
 
     private void goToLogin() {
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, SetupActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
     public void logout(View view) {
-        log.info("In logout()");
+        Log.v("In logout()");
         LoginManager.getInstance().logOut();
         goToLogin();
     }
@@ -178,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     /** TODO Place hint in red under edit-text view */
     private void showOfferHint(String hint) {
         ((TextView)findViewById(R.id.offer_hint_text_view)).setText(hint);
-        log.warn(hint);
+        Log.w(hint);
     }
     /** TODO Remove hint text */
     private void hideOfferHint() {
@@ -231,28 +228,28 @@ public class MainActivity extends AppCompatActivity {
         };
         Consumer<PrintableTransactionReceipt> offer_consumer = (tx) -> {
             try {
-                log.info("Result of offer transaction:\n" + tx.toString());
+                Log.v("Result of offer transaction:\n" + tx.toString());
                 new Handler(Looper.getMainLooper()).post(() -> {
                     try {
                         showBidsAux();
                         enableOffer();
                     } catch (Exception e) {
-                        log.error(e.toString());
+                        Log.e(e.toString());
                     }
                 });
             } catch (Exception e) {
-                log.error(e.toString());
+                Log.e(e.toString());
             }
         };
 
         // Go!
-        log.info("Sending transaction...");
+        Log.v("Sending transaction...");
         hideOfferHint();
         disableOffer();
         try {
             CompletableFuture.supplyAsync(offer_supplier).thenAccept(offer_consumer);
         } catch(Exception e) {
-            log.error(e.toString());
+            Log.e(e.toString());
         }
     }
 
@@ -264,10 +261,10 @@ public class MainActivity extends AppCompatActivity {
                     .sendAsync()
                     .get();
             BigInteger wei = ethGetBalance.getBalance();
-            log.info("Address '" + credentials.getAddress() + "' has got a balance of " + wei.toString() + " wei");
+            Log.v("Address '" + credentials.getAddress() + "' has got a balance of " + wei.toString() + " wei");
             ((TextView)findViewById(R.id.my_balance_text_view)).setText(String.format(Locale.US,"%d wei", wei));
         } catch(Exception e) {
-            log.error(e.toString());
+            Log.e(e.toString());
         }
     }
 
@@ -290,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
     public void showBids(View view) { showBidsAux(); }
     private void showBidsAux() {
         if (!gotCredentials) {
-            log.error("Credentials failed to load, can't complete call to showBids()");
+            Log.e("Credentials failed to load, can't complete call to showBids()");
             return;
         }
         // After we get the result we need to perform UI changes. The callback will be in thread
@@ -302,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
                 .thenAccept(x -> setBidText(x, false, handler));
     }
     private void setBidText(BigInteger wei, boolean target_winner, Handler handler) {
-        log.info("Got " + (target_winner ? "winner" : "runner-up") + " bid: " + wei.toString());
+        Log.v("Got " + (target_winner ? "winner" : "runner-up") + " bid: " + wei.toString());
         TextView tv;
         if (target_winner) {
             tv = findViewById(R.id.winner_bid_text_view);
