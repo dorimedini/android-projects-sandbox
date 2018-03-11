@@ -109,16 +109,16 @@ public class MainActivity extends AppCompatActivity {
         GraphRequest request = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
                 (object, response) -> {
-                    Log.v(TAG, "Response: " + (response == null ? "null" : response.toString()));
-                    Log.v(TAG, "Object: " + (object == null ? "null" : object.toString()));
+                    Log.v("Response: " + (response == null ? "null" : response.toString()));
+                    Log.v("Object: " + (object == null ? "null" : object.toString()));
 
                     // Application code
                     if (object != null) {
                         try {
                             String email = object.getString("email");
-                            Log.e(TAG, "Got email: " + email);
+                            Log.e("Got email: " + email);
                         } catch (Exception e) {
-                            Log.e(TAG, e.toString());
+                            Log.e(e.toString());
                         }
                     }
                 });
