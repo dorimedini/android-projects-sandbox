@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         Log.v("In onCreate(), current working directory is " + getApplicationInfo().dataDir);
         super.onCreate(savedInstanceState);
         AppEventsLogger.activateApp(getApplication());
+        setContentView(R.layout.activity_main);
     }
     @Override
     protected void onStart() {
@@ -63,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.v("Resuming, focusing on main activity...");
-        setContentView(R.layout.activity_main);
         initWeb3j();
         updateFacebookData();
         initUI();
