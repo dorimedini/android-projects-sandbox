@@ -28,4 +28,13 @@
         completions."
     </string>
 
+    <!-- Strings related to menu -->
+    <string name="menu_item_logout">Logout</string>
+    <string name="menu_item_new_game">New game</string>
+    <string name="menu_item_wallet">Connect wallet</string>
+    <string name="menu_item_create_wallet">Create new wallet</string>
+    <string name="menu_item_import_wallet">Connect existing wallet</string>
+    <string name="menu_item_dummy_wallet">Use built-in wallet</string>
+
+
 </resources>

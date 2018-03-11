@@ -5,6 +5,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -50,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         AppEventsLogger.activateApp(getApplication());
         setContentView(R.layout.activity_main);
+
+        setSupportActionBar(findViewById(R.id.toolbar));
     }
     @Override
     protected void onStart() {
@@ -67,6 +72,55 @@ public class MainActivity extends AppCompatActivity {
         initWeb3j();
         updateFacebookData();
         initUI();
+    }
+
+    // Menus
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.v("Got option " + (item == null ? "NULL" : item.toString()));
+        switch (item.getItemId()) {
+            case R.id.logout_menu:
+                // TODO: Implement
+                Log.v("TBI: Logout menu action");
+                return true;
+
+            case R.id.new_game_menu:
+                // TODO: Implement
+                Log.v("TBI: New game menu action");
+                return true;
+
+            case R.id.connect_wallet_menu:
+                // TODO: Implement
+                Log.v("TBI: Connect wallet menu action");
+                return true;
+
+            case R.id.create_wallet_menu:
+                // TODO: Implement
+                Log.v("TBI: Create wallet menu action");
+                return true;
+
+            case R.id.import_wallet_menu:
+                // TODO: Implement
+                Log.v("TBI: Import wallet menu action");
+                return true;
+
+            case R.id.dummy_wallet_menu:
+                // TODO: Implement
+                Log.v("TBI: Dummy wallet menu action");
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                Log.w("Unrecognized option '" + (item == null ? "NULL" : item.toString()) + "'");
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void initWeb3j() {

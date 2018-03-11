@@ -1,4 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/new_game_menu"
+        android:orderInCategory="100"
+        android:title="@string/menu_item_new_game"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/connect_wallet_menu"
+        android:title="@string/menu_item_wallet"
+        android:orderInCategory="100"
+        app:showAsAction="never" >
+        <menu>
+            <item
+                android:id="@+id/create_wallet_menu"
+                android:orderInCategory="100"
+                android:title="@string/menu_item_create_wallet"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/import_wallet_menu"
+                android:orderInCategory="100"
+                android:title="@string/menu_item_import_wallet"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/dummy_wallet_menu"
+                android:orderInCategory="100"
+                android:title="@string/menu_item_dummy_wallet"
+                app:showAsAction="never" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/logout_menu"
+        android:orderInCategory="100"
+        android:title="@string/menu_item_logout"
+        app:showAsAction="never" />
 </menu>
