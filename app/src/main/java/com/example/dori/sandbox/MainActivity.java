@@ -83,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.v("Got option " + (item == null ? "NULL" : item.toString()));
+        String item_name = (item == null ? "NULL" : item.toString());
+        Log.v("Got option " + item_name);
         switch (item.getItemId()) {
             case R.id.logout_menu:
                 // TODO: Implement
@@ -92,33 +93,33 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.new_game_menu:
                 // TODO: Implement
-                Log.v("TBI: New game menu action");
+                Log.v("TBI: " + item_name + " menu action");
                 return true;
 
             case R.id.connect_wallet_menu:
                 // TODO: Implement
-                Log.v("TBI: Connect wallet menu action");
+                Log.v("TBI: " + item_name + " menu action");
                 return true;
 
             case R.id.create_wallet_menu:
                 // TODO: Implement
-                Log.v("TBI: Create wallet menu action");
+                Log.v("TBI: " + item_name + " menu action");
                 return true;
 
             case R.id.import_wallet_menu:
                 // TODO: Implement
-                Log.v("TBI: Import wallet menu action");
+                Log.v("TBI: " + item_name + " menu action");
                 return true;
 
             case R.id.dummy_wallet_menu:
                 // TODO: Implement
-                Log.v("TBI: Dummy wallet menu action");
+                Log.v("TBI: " + item_name + " menu action");
                 return true;
 
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
-                Log.w("Unrecognized option '" + (item == null ? "NULL" : item.toString()) + "'");
+                Log.w("Unrecognized option '" + item_name + "'");
                 return super.onOptionsItemSelected(item);
         }
     }
@@ -222,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
     }
 */
 
-    /** TODO Place hint in red under edit-text view */
     private void showOfferHint(String hint) {
         ((TextView)findViewById(R.id.offer_hint_text_view)).setText(hint);
         Log.w(hint);
@@ -241,8 +241,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /** Called when user makes an offer */
-    // FIXME Also, make the callback lambdas actual handlers, so we can gray out the offer button
-    // FIXME while transaction is in the air
     public void offer(View view) {
 
         // Cleanup
