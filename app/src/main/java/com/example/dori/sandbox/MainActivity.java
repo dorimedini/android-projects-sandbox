@@ -23,7 +23,6 @@ import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
 import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
@@ -256,13 +255,29 @@ public class MainActivity extends AppCompatActivity {
     /** Call to see current user balance */
     public void updateBalance(View view) {
         try {
-            EthGetBalance ethGetBalance = web3j
-                    .ethGetBalance(credentials.getAddress(), DefaultBlockParameterName.LATEST)
-                    .sendAsync()
-                    .get();
-            BigInteger wei = ethGetBalance.getBalance();
-            Log.v("Address '" + credentials.getAddress() + "' has got a balance of " + wei.toString() + " wei");
-            ((TextView)findViewById(R.id.my_balance_text_view)).setText(String.format(Locale.US,"%d wei", wei));
+            Handler handler = new Handler();
+            CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            return web3j.ethGetBalance(credentials.getAddress(), DefaultBlockParameterName.LATEST)
+                                    .sendAsync()
+                                    .get()
+                                    .getBalance();
+                        } catch (Exception e) {
+                            Log.e(e.toString());
+                            return EthUtils.INVALID_WEI_VALUE;
+                        }
+                    })
+                    .thenAccept((wei) -> {
+                        try {
+                            Log.v("Address '" + credentials.getAddress() + "' " +
+                                    "has got a balance of " + wei.toString() + " wei");
+                            TextView my_balance = findViewById(R.id.my_balance_text_view);
+                            handler.post(() -> my_balance.setText(String.format(Locale.US,"%d wei", wei)));
+                        } catch (Exception e) {
+                            Log.e(e.toString());
+                        }
+                    });
         } catch(Exception e) {
             Log.e(e.toString());
         }
