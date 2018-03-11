@@ -87,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
         Log.v("Got option " + item_name);
         switch (item.getItemId()) {
             case R.id.logout_menu:
-                // TODO: Implement
-                Log.v("TBI: Logout menu action");
+                Log.v("TBI: " + item_name + " menu action");
+                logout();
                 return true;
 
             case R.id.new_game_menu:
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
-    public void logout(View view) {
+    public void logout() {
         Log.v("In logout()");
         LoginManager.getInstance().logOut();
         goToLogin();
